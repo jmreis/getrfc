@@ -1,4 +1,9 @@
 import setuptools
+import os.path
+import shutil
+
+if os.path.isfile('getrfc'):
+    shutil.copyfile('getrfc', 'getrfc.py')
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -13,6 +18,12 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/jmreis/pygetrfc",
     packages=setuptools.find_packages(),
+    py_modules=['getrfc'],
+    entry_points={
+        'console_scripts': [
+            'getrfc = get_rfc:main',
+        ],
+    },
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
