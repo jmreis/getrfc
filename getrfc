@@ -123,8 +123,8 @@ def get_rfc():
 
 if __name__ == '__main__':
     if sys.argv[1] == '--list' or sys.argv[1] == '-l':
-        rfcs.list_rfc()
+        list_rfc()
     elif sys.argv[1] == '-h' or sys.argv[1] == '--help':
-        rfcs.rfc_help()
+        rfc_help()
     else:
-        rfcs.get_rfc()
+        get_rfc()
