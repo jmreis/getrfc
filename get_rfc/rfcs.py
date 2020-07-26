@@ -40,8 +40,8 @@ def rfc_help():
 
     Usage:
     ------
-            python3 rfc_download.py -h
-            python3 rfc_download.py --help
+            getrfc -h
+            getrfc --help
 
     Tests:
     >>> help()
@@ -49,7 +49,14 @@ def rfc_help():
     """
     # Information for help the users
     print(
-        """
+        """\033[31m
+           _____      _   _____  ______ _____
+          / ____|    | | |  __ \|  ____/ ____|
+         | |  __  ___| |_| |__) | |__ | |
+         | | |_ |/ _ \ __|  _  /|  __|| |
+         | |__| |  __/ |_| | \ \| |   | |____
+          \_____|\___|\__|_|  \_\_|    \_____|
+        ---------------------------------------\033[m
         Usage:
         ------
             getrfc <arguments>
@@ -105,5 +112,9 @@ def get_rfc():
         rfc_raw = urllib.request.urlopen(url).read()
         rfc = rfc_raw.decode()
         print(rfc)
-    except:
-        print("Connecion Error, check your connection!!!")
+    except HTTPError as e:
+        print('The server couldn\'t fulfill the request.')
+        print('Error code: ', e.code)
+    except URLError as e:
+        print('We failed to reach a server.')
+        print('Reason: ', e.reason)
