@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+# -*- coding: utf8 -*-
 # MIT License
 #
 # Copyright (c) 2020 Jair Reis <jmsrdebian@protonmail.com>
@@ -276,9 +277,9 @@ def get_rfc():
             getrfc <RFC number>
     Tests:
     ------
-    >>> os.system('python3 rfc_download.py 8391')
+    >>> os.system('getrfc 8391')
 
-    >>> os.system('python3 rfc_download.py 20')
+    >>> os.system('getrfc 20')
     """
     try:
         rfc_number = int(sys.argv[1])
