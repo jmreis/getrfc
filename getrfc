@@ -225,7 +225,6 @@ def rfc_help():
     ------
             getrfc -h
             getrfc --help
-
     Tests:
     >>> help()
 
@@ -245,7 +244,6 @@ def rfc_help():
             getrfc <arguments>
 
             Arguments:
-
                     -h  or --help   print help information
                     <RFC number>    print the RFC
                     -l  or --list   print the RFC list
