@@ -266,7 +266,7 @@ def get_rfc():
         help()
         sys.exit(2)
 
-    url = f'https://www.ietf.org/rfc/rfc{rfc_number}.txt'
+    url = f"https://www.ietf.org/rfc/rfc{rfc_number}.txt"
     # Getting the RFC from url
     try:
         rfc_raw = urlopen(url).read()
