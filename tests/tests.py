@@ -1,0 +1,304 @@
+#!/usr/bin/env python3
+# -*- coding: utf8 -*-
+# MIT License
+#
+# Copyright (c) 2020 Jair Reis <jmsrdebian@protonmail.com>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+"""
+A simple module for get RFC from site www.ietf.org.
+
+This module use a simple request for download the RFC in
+.txt format. Other functionality is the list of RFC for
+get your number and descripitions.
+"""
+
+import sys
+import urllib.request
+
+
+__all__ = ['rfc_help', 'list_rfc', 'get_rfc']
+__version__ = '0.0.1'
+__author__ = 'Jair Reis'
+
+
+rfc_list = """
+RFC 20 	ASCII format for Network Interchange 	October 16, 1969 	ASCII
+RFC 768 	User Datagram Protocol 	August 28, 1980 	UDP
+RFC 783 	THE TFTP PROTOCOL (REVISION 2) 	June 1981 	TFTP 	RFC 1350
+RFC 791 	Internet Protocol 	September 1981 	IPv4
+RFC 792 	INTERNET CONTROL MESSAGE PROTOCOL 	September 1981 	ICMP
+RFC 793 	TRANSMISSION CONTROL PROTOCOL 	September 1981 	TCP
+RFC 826 	An Ethernet Address Resolution Protocol 	November 1982 	ARP
+RFC 854 	TELNET PROTOCOL SPECIFICATION 	May 1983 	Telnet
+RFC 855 	TELNET OPTION SPECIFICATIONS 	May 1983
+RFC 862 	Echo Protocol 	May 1983 	Echo
+RFC 863 	Discard Protocol 	May 1983 	DISCARD
+RFC 864 	Character Generator Protocol 	May 1983 	CHARGEN
+RFC 868 	Time Protocol 	May 1983 	TIME
+RFC 903 	A Reverse Address Resolution Protocol 	June 1984 	RARP
+RFC 937 	POST OFFICE PROTOCOL - VERSION 2 	February 1985 	POP v 2
+RFC 951 	BOOTSTRAP PROTOCOL (BOOTP) 	September 1985 	BOOTP
+RFC 959 	FILE TRANSFER PROTOCOL (FTP) 	October 1985 	FTP
+RFC 1034 	DOMAIN NAMES - CONCEPTS AND FACILITIES 	November 1987 	DNS
+RFC 1035 	DOMAIN NAMES - IMPLEMENTATION AND SPECIFICATION 	November 1987 	DNS
+RFC 1036 	Standard for Interchange of USENET Messages 	December 1987 	Usenet
+RFC 1055 	A Non-Standard for Transmission of IP Datagrams Over Serial Lines: SLIP 	June 1988 	SLIP
+RFC 1058 	Routing Information Protocol 	June 1988 	RIP v 1
+RFC 1059 	Network Time Protocol (version 1) specification and implementation 	July 1988 	NTP v 1
+RFC 1087 	Ethics and the Internet 	January 1989 	Internet Ethics
+RFC 1119 	Network Time Protocol (version 2) specification and implementation 	September 1989 	NTP v 2
+RFC 1149 	A Standard for the Transmission of IP Datagrams on Avian Carriers 	April 1, 1990 	IP over Avian Carriers
+RFC 1157 	A Simple Network Management Protocol (SNMP) 	May 1990 	SNMP v1
+RFC 1176 	INTERACTIVE MAIL ACCESS PROTOCOL - VERSION 2 	August 1990 	IMAP v 2
+RFC 1305 	Network Time Protocol (Version 3) Specification, Implementation and Analysis 	March 1992 	NTP v 3 	RFC 5905 	Obsoletes RFC 1119, RFC 1059, RFC 958
+RFC 1321 	The MD5 Message-Digest Algorithm 	April 1992 	MD5
+RFC 1350 	THE TFTP PROTOCOL (REVISION 2) 	July 1992 	TFTP 		Obsoletes RFC 783
+RFC 1436 	The Internet Gopher Protocol 	March 1993 	Gopher
+RFC 1441 	Introduction to version 2 of the Internet-standard Network Management Framework 	April 1993 	SNMP v 2
+RFC 1459 	Internet Relay Chat Protocol 	May 1993 	IRC
+RFC 1730 	INTERNET MESSAGE ACCESS PROTOCOL - VERSION 4 	December 1994 	IMAP v 4
+RFC 1777 	Lightweight Directory Access Protocol 	March 1995 	LDAP
+RFC 1855 	Netiquette Guidelines 	October 1995 	Netiquette
+RFC 1918 	Address Allocation for Private Internets 	February 1996 	Private network
+RFC 1939 	Post Office Protocol - Version 3 	May 1996 	POP v 3
+RFC 1945 	Hypertext Transfer Protocol—HTTP/1.0 	May 1996 	HTTP v 1.0
+RFC 1948 	Defending Against Sequence Number Attacks 	May 1996 	IP spoofing
+RFC 1950 	ZLIB Compressed Data Format Specification version 3.3 	May 1996 	Zlib v 3.3
+RFC 1951 	DEFLATE Compressed Data Format Specification version 1.3 	May 1996 	DEFLATE v 1.3
+RFC 1952 	GZIP file format specification version 4.3 	May 1996 	Gzip v 4.3
+RFC 1964 	The Kerberos Version 5 GSS-API Mechanism 	June 1996 	Kerberos; GSSAPI
+RFC 2080 	RIPng for IPv6 	January 1997 	RIP v ng
+RFC 2119 	Key words for use in RFCs to Indicate Requirement Levels 	March 1997 	Request for Comments 		Updated by RFC 8174
+RFC 2131 	Dynamic Host Configuration Protocol 	March 1997 	DHCP
+RFC 2177 	IMAP4 IDLE command 	June 1997 	IMAP IDLE
+RFC 2195 	IMAP/POP AUTHorize Extension for Simple Challenge/Response 	September 1997 	CRAM-MD5
+RFC 2228 	FTP Security Extensions 	October 1997 	FTP
+RFC 2230 	Key Exchange Delegation Record for the DNS 	November 1997 	Secure DNS
+RFC 2246 	The TLS Protocol Version 1.0 	January 1999 	TLS 1.0
+RFC 2251 	Lightweight Directory Access Protocol (v3) 	December 1997 	LDAP v 3
+RFC 2252 	Lightweight Directory Access Protocol (v3): Attribute Syntax Definitions
+RFC 2253 	Lightweight Directory Access Protocol (v3): UTF-8 String Representation of Distinguished Names
+RFC 2254 	The String Representation of LDAP Search Filters
+RFC 2255 	The LDAP URL Format
+RFC 2256 	A Summary of the X.500(96) User Schema for use with LDAPv3
+RFC 2326 	Real Time Streaming Protocol (RTSP) 	April 1998 	RTSP
+RFC 2327 	SDP: Session Description Protocol 	April 1998 	SDP
+RFC 2328 	OSPF Version 2 	April 1998 	OSPF
+RFC 2351 	Mapping of Airline Reservation, Ticketing, and Messaging Traffic over IP 	May 1998 	MATIP
+RFC 2362 	Protocol Independent Multicast-Sparse Mode (PIM-SM) 	June 1998 	PIM
+RFC 2397 	The "data" URL scheme 	August 1998 	Data: URI scheme
+RFC 2407 	Internet IP Security Domain of Interpretation for ISAKMP. 	November 1998 	IKE
+RFC 2408 	Internet Security Association and Key Management Protocol (ISAKMP)
+RFC 2409 	The Internet Key Exchange (IKE)
+RFC 2427 	Multiprotocol Interconnect over Frame Relay 	September 1998 	Frame relay 	1294, 1490
+RFC 2453 	RIP Version 2 	November 1998 	RIP v 2
+RFC 2460 	Internet Protocol, Version 6 (IPv6) Specification 	December 1998 	IPv6
+RFC 2549 	IP over Avian Carriers with Quality of Service 	April 1, 1999 	IP over Avian Carriers
+RFC 2555 	30 Years of RFCs 	April 7, 1999 			Retraces the history of RFCs
+RFC 2570 	Introduction to Version 3 of the Internet-standard Network Management Framework 	April 1999 	SNMP v3
+RFC 2595 	Using TLS with IMAP, POP3 and ACAP 	June 1999 	STARTTLS for IMAP, POP3 and ACAP
+RFC 2606 	Reserved Top Level DNS Names 	June 1999 	Fictitious domain name 		example.com, .test, ...
+RFC 2740 	OSPF for IPv6 	December 1999 	OSPF
+RFC 2743 	Generic Security Service Application Program Interface Version 2, Update 1 	January 2000 	GSSAPI v 2
+RFC 2744 	Generic Security Service API Version 2 : C-bindings
+RFC 2801 	Internet Open Trading Protocol - IOTP Version 1.0 	April 2000 	Internet Open Trading Protocol
+RFC 2802 	Digital Signatures for the v1.0 Internet Open Trading Protocol (IOTP) 	April 2000 	Internet Open Trading Protocol
+RFC 2810 	Internet Relay Chat: Architecture 	April 2000 	IRC
+RFC 2811 	Internet Relay Chat: Channel Management
+RFC 2812 	Internet Relay Chat: Client Protocol
+RFC 2813 	Internet Relay Chat: Server Protocol
+RFC 2853 	Generic Security Service API Version 2 : Java Bindings 	June 2000 	GSSAPI v 2
+RFC 2865 	Remote Authentication Dial In User Service (RADIUS) 	June 2000 	RADIUS
+RFC 2866 	RADIUS Accounting 	June 2000
+RFC 2935 	Internet Open Trading Protocol (IOTP) HTTP Supplement 	September 2000 	Internet Open Trading Protocol
+RFC 2974 	Session Announcement Protocol 	October 2000 	SAP
+RFC 3504 	Internet Open Trading Protocol (IOTP), Version 1, Errata 	March 2003 	Internet Open Trading Protocol
+RFC 3022 	Traditional IP Network Address Translator (Traditional NAT) 	January 2001 	NAT
+RFC 3031 	Multiprotocol Label Switching Architecture 	January 2001 	MPLS
+RFC 3053 	IPv6 Tunnel Broker 	January 2001 	Tunnel Broker
+RFC 3056 	Connection of IPv6 Domains via IPv4 Clouds 	February 2001 	6to4
+RFC 3080 	The Blocks Extensible Exchange Protocol Core 	March 2001 	BEEP
+RFC 3162 	RADIUS and IPv6 	August 2001 	RADIUS (IPv6)
+RFC 3207 	SMTP Service Extension for Secure SMTP over Transport Layer Security 	February 2002 	STARTTLS for simple mail transfer protocol
+RFC 3261 	SIP: Session Initiation Protocol 	June 2002 	SIP
+RFC 3284 	The VCDIFF Generic Differencing and Compression Data Format 	June 2002 	VCDIFF
+RFC 3286 	An Introduction to the Stream Control Transmission Protocol (SCTP) 	May 2002 	SCTP
+RFC 3315 	Dynamic Host Configuration Protocol for IPv6 (DHCPv6) 	July 2003 	DHCP (IPv6)
+RFC 3339 	Date and Time on the Internet: Timestamps 	July 2002 	Timestamp
+RFC 3376 	Internet Group Management Protocol, Version 3 	October 2002 	IGMP v 3
+RFC 3401 	Dynamic Delegation Discovery System (DDDS) Part One: The Comprehensive DDDS 	October 2002 	DDDS
+RFC 3402 	Dynamic Delegation Discovery System (DDDS) Part Two: The Algorithm
+RFC 3403 	Dynamic Delegation Discovery System (DDDS) Part Three: The Domain Name System (DNS) Database
+RFC 3404 	Dynamic Delegation Discovery System (DDDS) Part Four: The Uniform Resource Identifiers (URI) Resolution Application
+RFC 3405 	Dynamic Delegation Discovery System (DDDS) Part Five: URI.ARPA Assignment Procedures
+RFC 3492 	Punycode: A Bootstring encoding of Unicode for Internationalized Domain Names in Applications (IDNA) 	March 2003 	Punycode
+RFC 3501 	INTERNET MESSAGE ACCESS PROTOCOL - VERSION 4rev1 	March 2003 	IMAP v 4r1
+RFC 3530 	Network File System (NFS) version 4 Protocol 	April 2003 	NFS v 4
+RFC 3538 	Secure Electronic Transaction (SET) Supplement for the v1.0 Internet Open Trading Protocol (IOTP) 	June 2003 	Internet Open Trading Protocol
+RFC 3550 	RTP: A Transport Protocol for Real-Time Applications 	July 2003 	RTP
+RFC 3711 	The Secure Real-time Transport Protocol (SRTP) 	March 2004 	SRTP
+RFC 3720 	Internet Small Computer Systems Interface (iSCSI) 	April 2004 	ISCSI
+RFC 3730 	Extensible Provisioning Protocol (EPP) 	March 2004 	Extensible Provisioning Protocol
+RFC 3783 	Small Computer Systems Interface (SCSI) Command Ordering Considerations with iSCSI 	May 2004 	ISCSI
+RFC 3801 	Voice Profile for Internet Protocol 	June 2004 	VPIM
+RFC 3830 	MIKEY: Multimedia Internet KEYing 	August 2004 	MIKEY
+RFC 3867 	Payment Application Programmers Interface (API) for v1.0 	November 2004 	Internet Open Trading Protocol
+RFC 3977 	Network News Transfer Protocol 	October 2006 	NNTP
+RFC 4122 	A Universally Unique IDentifier (UUID) URN Namespace 	July 2005 	UUID
+RFC 4151 	The 'tag' URI Scheme 	October 2005 	Tag URI scheme
+RFC 4213 	Basic Transition Mechanisms for IPv6 Hosts and Routers 	October 2005 	6in4
+RFC 4217 	Securing FTP with TLS 	October 2005 	SSL FTP (FTPS)
+RFC 4271 	Border Gateway Protocol 4 	January 2006 	Border Gateway Protocol
+RFC 4287 	The Atom Syndication Format 	December 2005 	Atom
+RFC 4251 	The Secure Shell (SSH) Protocol Architecture 	January 2006 	SSH-2
+RFC 4291 	IP Version 6 Addressing Architecture 	February 2006 	IPv6
+RFC 4353 	A Framework for Conferencing with the Session Initiation Protocol (SIP) 	February 2006 	Conference call
+RFC 4408 	Sender Policy Framework (SPF) for Authorizing Use of Domains in E-Mail, Version 1 	January 2006 	SPF
+RFC 4422 	Simple Authentication and Security Layer (SASL) 	June 2006 	SASL
+RFC 4541 	Considerations for Internet Group Management Protocol (IGMP) and Multicast Listener Discovery (MLD) Snooping Switches 	May 2006 	IGMP snooping
+RFC 4575 	A Session Initiation Protocol (SIP) Event Package for Conference State 	August 2006 	Conference call
+RFC 4579 	Session Initiation Protocol (SIP) Call Control - Conferencing for User Agents 	August 2006
+RFC 4634 	US Secure Hash Algorithms (SHA and HMAC-SHA) 	July 2006 	SHA-1, SHA-2
+RFC 4646 	Tags for Identifying Languages 	September 2006 	language tags
+RFC 4655 	A Path Computation Element (PCE)-Based Architecture 	August 2008 	Path computation element
+RFC 4787 	Network Address Translation (NAT) Behavioral Requirements for Unicast UDP 	January 2007 	NAT
+RFC 4880 	OpenPGP Message Format 	November 2007 	OpenPGP
+RFC 4960 	Stream Control Transmission Protocol 	September 2007 	SCTP
+RFC 5023 	The Atom Publishing Protocol 	October 2007 	Atom
+RFC 5321 	Simple Mail Transfer Protocol 	October 2008 	SMTP
+RFC 5322 	Internet Message Format 	October 2008
+RFC 5533 	Shim6: Level 3 Multihoming Shim Protocol for IPv6 	June 2009 	Site Multihoming by IPv6 Intermediation
+RFC 5545 	iCalendar Specification 	September 2009 	iCalendar
+RFC 5849 	The OAuth 1.0 Protocol 	April 2010 	OAuth
+RFC 5880 	Bidirectional Forwarding Detection 	June 2010 	BFD
+RFC 5881 	BFD for IPv4 and IPv6 (Single Hop) 	June 2010 	BFD
+RFC 5905 	Network Time Protocol Version 4: Protocol and Algorithms Specification 	June 2010 	NTP v 4 		Obsoletes RFC 1305, RFC 4330
+RFC 5969 	IPv6 Rapid Deployment on IPv4 Infrastructures (6rd) 	January 2010 	IPv6 rapid deployment
+RFC 6238 	TOTP: Time-Based One-Time Password Algorithm 	May 2011 	TOTP
+RFC 6265 	HTTP State Management Mechanism 	April 2011 	HTTP cookie
+RFC 6409 	Message submission for mail 	November 2011 	message submission agent 		replaces 2476, 4409
+RFC 6455 	The WebSocket Protocol 	December 2011 	WebSocket
+RFC 6508 	Sakai-Kasahara Key Encryption (SAKKE) 	February 2012 	SAKKE
+RFC 6716 	Definition of the Opus Audio Codec 	September 2012 	Opus (audio format) 		Updated by RFC 8251
+RFC 6726 	File Delivery over Unidirectional Transport (FLUTE) 	November 2012 	FLUTE 		Obsoletes RFC 3926
+RFC 6749 	The OAuth 2.0 Authorization Framework 	October 2012 	OAuth
+RFC 6797 	HTTP Strict Transport Security (HSTS) 	November 2012 	HTTP Strict Transport Security
+RFC 6805 	The Application of the Path Computation Element Architecture to the Determination of a Sequence of Domains in MPLS and GMPLS 	November 2012 	Path computation element
+RFC 7230 	Hypertext Transfer Protocol (HTTP/1.1): Message Syntax and Routing 	June 2014 	HTTP v1.1 		Obsoletes 2616
+RFC 7231 	Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content 	June 2014 	HTTP v1.1 		Obsoletes 2616
+RFC 7232 	Hypertext Transfer Protocol (HTTP/1.1): Conditional Requests 	June 2014 	HTTP v1.1 		Obsoletes 2616
+RFC 7233 	Hypertext Transfer Protocol (HTTP/1.1): Range Requests 	June 2014 	HTTP v1.1, Byte serving 		Obsoletes 2616
+RFC 7234 	Hypertext Transfer Protocol (HTTP/1.1): Caching 	June 2014 	HTTP v1.1 		Obsoletes 2616
+RFC 7235 	Hypertext Transfer Protocol (HTTP/1.1): Authentication 	June 2014 	HTTP v1.1 		Obsoletes 2616
+RFC 7301 	Transport Layer Security (TLS): Application-Layer Protocol Negotiation Extension 	July 2014 	Application-Layer Protocol Negotiation
+RFC 7348 	Virtual eXtensible Local Area Network (VXLAN): A Framework for Overlaying Virtualized Layer 2 Networks over Layer 3 Networks 	August 2014 	VXLAN
+RFC 7469 	Public Key Pinning Extension for HTTP 	April 2015 	HTTP Public Key Pinning
+RFC 7540 	Hypertext Transfer Protocol Version 2 (HTTP/2) 	May 2015 	HTTP/2
+RFC 7541 	HPACK: Header Compression for HTTP/2 	May 2015
+RFC 7567 	IETF Recommendations Regarding Active Queue Management 	July 2015 	Active Queue Management
+RFC 7725 	An HTTP Status Code to Report Legal Obstacles 	December 2015 	HTTP 451
+RFC 7871 	Client Subnet in DNS Queries 	May 2016 	Domain Name System
+RFC 8391 	XMSS: eXtended Merkle Signature Scheme 	May 2018 	Hash-based cryptography"""
+
+def rfc_help():
+    """
+    A function for print usage of the module.
+
+    Usage:
+    ------
+            getrfc -h
+            getrfc --help
+    Tests:
+    >>> help()
+
+    """
+    # Information for help the users
+    print(
+        """\033[31m
+           _____      _   _____  ______ _____
+          / ____|    | | |  __ \|  ____/ ____|
+         | |  __  ___| |_| |__) | |__ | |
+         | | |_ |/ _ \ __|  _  /|  __|| |
+         | |__| |  __/ |_| | \ \| |   | |____
+          \_____|\___|\__|_|  \_\_|    \_____|
+        ---------------------------------------\033[m
+        Usage:
+        ======
+            getrfc <arguments>
+
+            Arguments:
+                    -h  or --help   print help information
+                    <RFC number>    print the RFC
+                    -l  or --list   print the RFC list
+        """
+    )
+
+
+def list_rfc():
+    """
+    A function for print the RFC list.
+
+    Usage:
+    ------
+            getrfc --list or
+            getrfc -l
+    Tests:
+    ------
+    >>> list_rfc()
+    """
+    # List of RFC for users
+    print(rfc_list)
+
+
+def get_rfc():
+    """A function for get the RFC from IETF site.
+
+    Usage:
+    ------
+            getrfc <RFC number>
+    Tests:
+    ------
+    >>> get_rfc()
+
+    """
+    rfc_test = 20
+    try:
+        rfc_number = rfc_test
+    except (IndexError, ValueError):
+        help()
+        sys.exit(2)
+
+    url = f'https://www.ietf.org/rfc/rfc{rfc_number}.txt'
+    # Getting the RFC from url
+    try:
+        rfc_raw = urllib.request.urlopen(url).read()
+        rfc = rfc_raw.decode()
+        print(rfc)
+    except HTTPError as e:
+        print('The server couldn\'t fulfill the request.')
+        print('Error code: ', e.code)
+    except URLError as e:
+        print('We failed to reach a server.')
+        print('Reason: ', e.reason)
+
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
