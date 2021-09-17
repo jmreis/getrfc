@@ -280,6 +280,8 @@ def get_rfc(rfc_number):
     >>> os.system('getrfc 8391')
 
     >>> os.system('getrfc 20')
+    
+    >>> os.system('getrfc 7725')
     """
     try:
         rfc_number = int(sys.argv[1])
