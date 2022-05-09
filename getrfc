@@ -28,8 +28,10 @@ This module use a simple request for download the RFC in
 .txt format. Other functionality is the list of RFC for
 get your number and descripitions.
 """
-
 import sys
+import os
+import logging
+import argparse
 from urllib.request import Request
 from urllib.request import urlopen
 from urllib.error import URLError
@@ -37,11 +39,11 @@ from urllib.error import HTTPError
 
 
 __all__ = ['rfc_help', 'list_rfc', 'get_rfc']
-__version__ = '0.0.1'
+__version__ = '1.0.0'
 __author__ = 'Jair Reis'
 
 
-rfc_list = """
+RFC_LIST = """
 RFC 20 	ASCII format for Network Interchange 	October 16, 1969 	ASCII
 RFC 768 	User Datagram Protocol 	August 28, 1980 	UDP
 RFC 783 	THE TFTP PROTOCOL (REVISION 2) 	June 1981 	TFTP 	RFC 1350
@@ -220,74 +222,59 @@ RFC 7725 	An HTTP Status Code to Report Legal Obstacles 	December 2015 	HTTP 451
 RFC 7871 	Client Subnet in DNS Queries 	May 2016 	Domain Name System
 RFC 8391 	XMSS: eXtended Merkle Signature Scheme 	May 2018 	Hash-based cryptography"""
 
-def rfc_help():
-    """
-    A function for print usage of the module.
+# Setting terminal colors and ascii art header
+RED = "\033[31;1m"
+GREEN = "\033[32;1m"
+CIANO = "\033[36;1m"
+BLUE = "\033[1;94m"
+RESET = "\033[0;0m"
 
-    Usage:
-    ------
-            getrfc -h
-            getrfc --help
-    Tests:
-    >>> help()
-
-    """
-    # Information for help the users
-    message_help = """\033[31m
+# Setting header
+APP_HEADER = f"""{GREEN}
            _____      _   _____  ______ _____
           / ____|    | | |  __ \|  ____/ ____|
          | |  __  ___| |_| |__) | |__ | |
          | | |_ |/ _ \ __|  _  /|  __|| |
          | |__| |  __/ |_| | \ \| |   | |____
           \_____|\___|\__|_|  \_\_|    \_____|
-        ---------------------------------------\033[m
-        Usage:
-        ======
-            getrfc <arguments>
-
-            Arguments:
-                    -h  or --help   print help information
-                    <RFC number>    print the RFC
-                    -l  or --list   print the RFC list
+        ========================================
+                     By Jair Reis
+        ========================================{RESET}
+        Try -h or --help.
     """
-    print(message_help)
+# Setting the logging configurations
+logging.basicConfig(format='%(message)s - getrfc - %(asctime)s',
+        level=logging.DEBUG)
+
+
+def show_app_header():
+    """A function for print the app header."""
+    print(APP_HEADER)
 
 
 def list_rfc():
-    """
-    A function for print the RFC list.
+    """A function for print the RFC list.
 
-    Usage:
-    ------
-            getrfc --list or
-            getrfc -l
     Tests:
-    ------
+
     >>> list_rfc()
     """
     # List of RFC for users
-    print(rfc_list)
+    print(RFC_LIST)
 
 
 def get_rfc(rfc_number):
     """A function for get the RFC from IETF site.
 
-    Usage:
-    ------
-            getrfc <RFC number>
     Tests:
-    ------
+    
     >>> os.system('getrfc 8391')
 
     >>> os.system('getrfc 20')
     
     >>> os.system('getrfc 7725')
     """
-    try:
-        rfc_number = int(sys.argv[1])
-    except (IndexError, ValueError):
-        help()
-        sys.exit(2)
+    
     url = f"https://www.ietf.org/rfc/rfc{rfc_number}.txt"
     # Getting the RFC from url
     try:
@@ -302,10 +289,26 @@ def get_rfc(rfc_number):
         print('Reason: ', e.reason)
 
 
-if __name__ == '__main__':
-    if sys.argv[1] == '--list' or sys.argv[1] == '-l':
+def main():
+    # Setting command line
+    parser = argparse.ArgumentParser(
+     prog='GETRFC',
+     description= "Get RFC documents",
+     epilog="""This cli app, list and get the
+     RFC network documentations from number.""")
+    
+    parser.add_argument('--list', '-l', help="Show the RFC list.", action='store_true')
+    parser.add_argument('--see', '-s', help="Show RFC from your number.")
+    args = parser.parse_args()
+
+    if args.list:
         list_rfc()
-    elif sys.argv[1] == '-h' or sys.argv[1] == '--help':
-        rfc_help()
-    else:
-        get_rfc()
+    elif args.see:
+        get_rfc(args.see)
+
+if __name__ == '__main__':
+    # Cleaning terminal
+    os.system("clear")
+    # Call the header function
+    show_app_header()
+    sys.exit(main())
