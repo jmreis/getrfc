@@ -41,7 +41,7 @@ __version__ = '0.0.1'
 __author__ = 'Jair Reis'
 
 
-rfc_list = """
+RFC_LIST = """
 RFC 20 	ASCII format for Network Interchange 	October 16, 1969 	ASCII
 RFC 768 	User Datagram Protocol 	August 28, 1980 	UDP
 RFC 783 	THE TFTP PROTOCOL (REVISION 2) 	June 1981 	TFTP 	RFC 1350
@@ -218,69 +218,39 @@ RFC 7541 	HPACK: Header Compression for HTTP/2 	May 2015
 RFC 7567 	IETF Recommendations Regarding Active Queue Management 	July 2015 	Active Queue Management
 RFC 7725 	An HTTP Status Code to Report Legal Obstacles 	December 2015 	HTTP 451
 RFC 7871 	Client Subnet in DNS Queries 	May 2016 	Domain Name System
-RFC 8391 	XMSS: eXtended Merkle Signature Scheme 	May 2018 	Hash-based cryptography"""
+RFC 8391 	XMSS: eXtended Merkle Signature Scheme 	May 2018 	Hash-based cryptography
+"""
 
-def rfc_help():
-    """
-    A function for print usage of the module.
 
-    Usage:
-    ------
-            getrfc -h
-            getrfc --help
-    Tests:
-    >>> help()
-
-    """
-    # Information for help the users
-    message_help = """\033[31m
+HEADER = """\033[31m
            _____      _   _____  ______ _____
           / ____|    | | |  __ \|  ____/ ____|
          | |  __  ___| |_| |__) | |__ | |
          | | |_ |/ _ \ __|  _  /|  __|| |
          | |__| |  __/ |_| | \ \| |   | |____
           \_____|\___|\__|_|  \_\_|    \_____|
-        ---------------------------------------\033[m
-        Usage:
-        ======
-            getrfc <arguments>
-
-            Arguments:
-                    -h  or --help   print help information
-                    <RFC number>    print the RFC
-                    -l  or --list   print the RFC list
+        ---------------------------------------
+         By Jair Reis
+        ---------------------------------------\033[m 
     """
-    print(message_help)
-
 
 def list_rfc():
     """
     A function for print the RFC list.
 
-    Usage:
-    ------
-            getrfc --list or
-            getrfc -l
     Tests:
-    ------
     >>> list_rfc()
     """
     # List of RFC for users
-    print(rfc_list)
+    print(RFC_LIST)
 
 
 def get_rfc(rfc_number):
     """A function for get the RFC from IETF site.
 
-    Usage:
-    ------
-            getrfc <RFC number>
     Tests:
-    ------
     >>> os.system('getrfc 8391')
-
     >>> os.system('getrfc 20')
-    
     >>> os.system('getrfc 7725')
     """
     try:
